@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskMaster - Advanced TO-DO List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="light-mode">
+    <div class="app-container">
+        <header>
+            <div class="logo-container">
+                <i class="fas fa-check-double logo-icon"></i>
+                <h1>TaskMaster</h1>
+            </div>
+            <div class="header-controls">
+                <div class="theme-toggle">
+                    <input type="checkbox" id="theme-switch" class="theme-switch">
+                    <label for="theme-switch" class="slider">
+                        <i class="fas fa-sun"></i>
+                        <i class="fas fa-moon"></i>
+                    </label>
+                </div>
+                <div class="user-profile">
+                    <span class="user-name">User</span>
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <aside class="sidebar">
+                <nav class="main-nav">
+                    <ul>
+                        <li class="active" data-view="all"><i class="fas fa-home"></i> All Tasks</li>
+                        <li data-view="today"><i class="fas fa-calendar-day"></i> Today</li>
+                        <li data-view="upcoming"><i class="fas fa-calendar-week"></i> Upcoming</li>
+                        <li data-view="important"><i class="fas fa-star"></i> Important</li>
+                        <li data-view="completed"><i class="fas fa-check-circle"></i> Completed</li>
+                    </ul>
+                </nav>
+                <div class="projects-section">
+                    <div class="section-header">
+                        <h3>Projects</h3>
+                        <button class="btn-add-project" id="addProjectBtn">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <ul class="projects-list" id="projectsList">
+                        <li data-project="work"><i class="fas fa-briefcase"></i> Work</li>
+                        <li data-project="personal"><i class="fas fa-user"></i> Personal</li>
+                    </ul>
+                </div>
+                <div class="app-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Tasks</span>
+                        <span class="stat-value" id="totalTasksCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Completed</span>
+                        <span class="stat-value" id="completedTasksCount">0</span>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="content-area">
+                <div class="page-header">
+                    <h2 id="currentView">All Tasks</h2>
+                    <div class="view-controls">
+                        <select id="sortOptions" class="sort-dropdown">
+                            <option value="date">Sort by Date</option>
+                            <option value="priority">Sort by Priority</option>
+                            <option value="name">Sort by Name</option>
+                        </select>
+                        <div class="view-layout">
+                            <button class="btn-view active" data-layout="list"><i class="fas fa-list"></i></button>
+                            <button class="btn-view" data-layout="grid"><i class="fas fa-th"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="add-task-container">
+                    <form id="addTaskForm" class="add-task-form">
+                        <div class="task-input-group">
+                            <input type="text" id="taskInput" placeholder="Add a new task..." required>
+                            <button type="submit" class="btn-add-task">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="task-details-container hidden" id="taskDetailsContainer">
+                            <div class="detail-row">
+                                <div class="detail-group">
+                                    <label for="taskDueDate"><i class="fas fa-calendar"></i> Due Date</label>
+                                    <input type="date" id="taskDueDate">
+                                </div>
+                                <div class="detail-group">
+                                    <label for="taskPriority"><i class="fas fa-flag"></i> Priority</label>
+                                    <select id="taskPriority">
+                                        <option value="low">Low</option>
+                                        <option value="medium" selected>Medium</option>
+                                        <option value="high">High</option>
+                                    </select>
+                                </div>
+                                <div class="detail-group">
+                                    <label for="taskProject"><i class="fas fa-folder"></i> Project</label>
+                                    <select id="taskProject">
+                                        <option value="none">None</option>
+                                        <option value="work">Work</option>
+                                        <option value="personal">Personal</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-group full-width">
+                                    <label for="taskDescription"><i class="fas fa-align-left"></i> Description</label>
+                                    <textarea id="taskDescription" rows="2"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="tasks-container list-view" id="tasksContainer">
+                    <!-- Tasks will be added here dynamically -->
+                </div>
+                
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3>No tasks yet</h3>
+                    <p>Add a new task to get started!</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal for Task Details -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3 class="modal-title">Task Details</h3>
+            <div class="modal-body">
+                <form id="editTaskForm">
+                    <input type="hidden" id="editTaskId">
+                    <div class="form-group">
+                        <label for="editTaskTitle">Title</label>
+                        <input type="text" id="editTaskTitle" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTaskDescription">Description</label>
+                        <textarea id="editTaskDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editTaskDueDate">Due Date</label>
+                            <input type="date" id="editTaskDueDate" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="editTaskPriority">Priority</label>
+                            <select id="editTaskPriority" class="form-control">
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTaskProject">Project</label>
+                        <select id="editTaskProject" class="form-control">
+                            <option value="none">None</option>
+                            <option value="work">Work</option>
+                            <option value="personal">Personal</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-delete" id="deleteTaskBtn">Delete</button>
+                        <button type="submit" class="btn-save">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Add Project -->
+    <div class="modal" id="projectModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3 class="modal-title">Add New Project</h3>
+            <div class="modal-body">
+                <form id="addProjectForm">
+                    <div class="form-group">
+                        <label for="projectName">Project Name</label>
+                        <input type="text" id="projectName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectIcon">Icon</label>
+                        <select id="projectIcon" class="form-control">
+                            <option value="fas fa-briefcase">Briefcase</option>
+                            <option value="fas fa-home">Home</option>
+                            <option value="fas fa-book">Book</option>
+                            <option value="fas fa-shopping-cart">Shopping</option>
+                            <option value="fas fa-plane">Travel</option>
+                            <option value="fas fa-graduation-cap">Education</option>
+                            <option value="fas fa-heart">Health</option>
+                            <option value="fas fa-cog">Settings</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn-save">Add Project</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
